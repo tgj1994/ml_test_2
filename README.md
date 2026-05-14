@@ -3,7 +3,7 @@
 Companion experiment to [`ml_test`](https://github.com/tgj1994/ml_test).
 The only experimental difference is the **training data start date**:
 
-|                    | ml_test (v1)              | **ml_test_v2** (this repo) |
+|                    | ml_test (v1)              | **ml_test_2** (this repo) |
 |--------------------|---------------------------|----------------------------|
 | Data start         | 2017-08 (Binance inception) | **2019-12-01 UTC**         |
 | Data rows          | ~3,012 daily              | ~2,176 daily (72%)         |
@@ -99,9 +99,9 @@ After both repos finish their full chain:
 ls ml_test/reports/utc2130/robustness_all_ebm.csv
 ls ml_test/reports/xgb/utc2130/robustness_all_xgb.csv
 
-# v2 results (ml_test_v2 — this repo)
-ls ml_test_v2/reports/utc2130/robustness_all_ebm.csv
-ls ml_test_v2/reports/xgb/utc2130/robustness_all_xgb.csv
+# v2 results (ml_test_2 — this repo)
+ls ml_test_2/reports/utc2130/robustness_all_ebm.csv
+ls ml_test_2/reports/xgb/utc2130/robustness_all_xgb.csv
 ```
 
 Same schema for both. Join on `(variant, mode, label_or_k, best_prob_th)`
