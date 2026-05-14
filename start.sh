@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Full sweep entry point for ml_test_v2.
+# Full sweep entry point for ml_test_2.
 #
 # DIFFERENCE FROM ml_test: data/ in this repo is the 2019-12-01 UTC cutoff
 # version (≈ 22% fewer rows than the full-history ml_test). The training
@@ -44,7 +44,7 @@ NOMINAL_CORES=$(( THROTTLE * THREADS ))
 TOTAL_CORES="$(nproc --all 2>/dev/null || echo 64)"
 
 echo "[start.sh] ============================================================"
-echo "[start.sh] ml_test_v2 full sweep (2019-12-01 UTC cutoff)"
+echo "[start.sh] ml_test_2 full sweep (2019-12-01 UTC cutoff)"
 echo "[start.sh] root      : $ROOT"
 echo "[start.sh] host      : $(hostname)"
 echo "[start.sh] cores     : ${NOMINAL_CORES} of ${TOTAL_CORES} ( ~$(( 100 * NOMINAL_CORES / TOTAL_CORES ))% )"

@@ -1,4 +1,4 @@
-# ml_test_v2 — BTC direction sweep (2019-12-01 cutoff, EBM + XGB, isotonic-calibrated)
+# ml_test_2 — BTC direction sweep (2019-12-01 cutoff, EBM + XGB, isotonic-calibrated)
 
 Companion experiment to [`ml_test`](https://github.com/tgj1994/ml_test).
 The only experimental difference is the **training data start date**:
@@ -21,8 +21,8 @@ recent / shorter window.
 ## Quick start (server-side)
 
 ```bash
-git clone <this-repo-url>.git ml_test_v2
-cd ml_test_v2
+git clone https://github.com/tgj1994/ml_test_2.git
+cd ml_test_2
 chmod +x start.sh
 nohup bash start.sh > sweep.log 2>&1 &
 echo $! > sweep.pid
@@ -69,7 +69,7 @@ sweep to land in **~5–6 hours**, and the full chain (19 phases) in
 ## Layout
 
 ```
-ml_test_v2/
+ml_test_2/
 ├── start.sh                 # full sweep entrypoint (v2 — 2019-12-01 cutoff)
 ├── pyproject.toml uv.lock   # Python deps (pinned)
 ├── data/                    # raw input parquets, pre-cut to 2019-12-01+ (~12 MB)
