@@ -1,0 +1,874 @@
+{
+  "version": "1.0",
+  "generated_for": "coin_prediction / coin_service",
+  "n_features": 122,
+  "categories": {
+    "daily_ta": "Daily timeframe technical indicators",
+    "weekly_ta": "Weekly timeframe technical indicators (as-of joined)",
+    "monthly_ta": "Monthly timeframe technical indicators (as-of joined)",
+    "window": "Window-summary statistics over multi-bar lookbacks",
+    "intraday": "15-minute intraday roll-ups projected to the daily index",
+    "sideways": "Regime / sideways-rate indicators",
+    "mvrv_proxy": "Price-based MVRV-Z proxy (long-MA realized-price approx.)",
+    "macro": "Cross-asset macro variables (yfinance)",
+    "futures": "Binance USDT-margined perpetual contract data",
+    "sentiment": "Fear & Greed Index (alternative.me)",
+    "calendar": "Day-of-week, month, halving distance"
+  },
+  "features": [
+    {
+      "name": "d_close",
+      "category": "daily_ta",
+      "desc": "BTC daily close price (USD).",
+      "formula": "C_t",
+      "source": "Bitstamp + Binance combined"
+    },
+    {
+      "name": "d_ret_1",
+      "category": "daily_ta",
+      "desc": "One-day simple return.",
+      "formula": "r_t = C_t / C_{t-1} - 1",
+      "source": "derived from close"
+    },
+    {
+      "name": "d_rsi14",
+      "category": "daily_ta",
+      "desc": "Wilder's 14-period Relative Strength Index on daily close. Standard momentum oscillator bounded in [0,100].",
+      "formula": "RSI = 100 - 100/(1 + avg_gain_14 / avg_loss_14)",
+      "source": "derived from close"
+    },
+    {
+      "name": "d_macd_hist",
+      "category": "daily_ta",
+      "desc": "MACD histogram = MACD line − Signal line. MACD line is EMA12 − EMA26 of close; Signal is EMA9 of MACD.",
+      "formula": "MACD_hist = (EMA_{12}(C) - EMA_{26}(C)) - EMA_9(MACD)",
+      "source": "derived from close"
+    },
+    {
+      "name": "d_bb_pos",
+      "category": "daily_ta",
+      "desc": "Position of price within a 20-day Bollinger band, normalised so that ±1 corresponds to the band edges.",
+      "formula": "(C_t - MA_{20}) / (2 \\sigma_{20})",
+      "source": "derived from close"
+    },
+    {
+      "name": "d_ma_ratio",
+      "category": "daily_ta",
+      "desc": "Ratio of 7-day fast moving average to 25-day slow moving average, minus 1. Positive in trends, near 0 in ranges.",
+      "formula": "MA_{7} / MA_{25} - 1",
+      "source": "derived from close"
+    },
+    {
+      "name": "d_vol",
+      "category": "daily_ta",
+      "desc": "14-day rolling standard deviation of log returns.",
+      "formula": "\\sigma_{14}(log r)",
+      "source": "derived from close"
+    },
+    {
+      "name": "d_range_pct",
+      "category": "daily_ta",
+      "desc": "Bar range as a percentage of close price.",
+      "formula": "(H_t - L_t) / C_t",
+      "source": "OHLCV"
+    },
+    {
+      "name": "d_vol_z",
+      "category": "daily_ta",
+      "desc": "180-day z-score of trading volume — captures unusual activity regimes.",
+      "formula": "(V_t - \\bar V_{180}) / \\sigma_V^{180}",
+      "source": "OHLCV"
+    },
+    {
+      "name": "w_close",
+      "category": "weekly_ta",
+      "desc": "Weekly close price; weekly bars are resampled from the daily series.",
+      "formula": "C_t^{(w)}",
+      "source": "resampled daily"
+    },
+    {
+      "name": "w_ret_1",
+      "category": "weekly_ta",
+      "desc": "One-week return.",
+      "formula": "r_t^{(w)} = C_t^{(w)} / C_{t-1}^{(w)} - 1",
+      "source": "resampled daily"
+    },
+    {
+      "name": "w_rsi14",
+      "category": "weekly_ta",
+      "desc": "14-period RSI on weekly close.",
+      "formula": "RSI_{14}^{(w)}",
+      "source": "resampled daily"
+    },
+    {
+      "name": "w_macd_hist",
+      "category": "weekly_ta",
+      "desc": "MACD histogram on weekly close.",
+      "formula": "MACD_hist^{(w)}",
+      "source": "resampled daily"
+    },
+    {
+      "name": "w_bb_pos",
+      "category": "weekly_ta",
+      "desc": "Bollinger position on weekly close (window length adapted to lookback).",
+      "formula": "(C^{(w)} - MA_{n}^{(w)}) / (2 \\sigma_n^{(w)})",
+      "source": "resampled daily"
+    },
+    {
+      "name": "w_ma_ratio",
+      "category": "weekly_ta",
+      "desc": "Fast/slow MA ratio on weekly close.",
+      "formula": "MA_7^{(w)}/MA_{25}^{(w)} - 1",
+      "source": "resampled daily"
+    },
+    {
+      "name": "w_vol",
+      "category": "weekly_ta",
+      "desc": "Rolling weekly log-return volatility.",
+      "formula": "\\sigma_{14}^{(w)}(log r)",
+      "source": "resampled daily"
+    },
+    {
+      "name": "w_range_pct",
+      "category": "weekly_ta",
+      "desc": "Weekly range as a percentage of close.",
+      "formula": "(H^{(w)} - L^{(w)}) / C^{(w)}",
+      "source": "resampled daily"
+    },
+    {
+      "name": "w_vol_z",
+      "category": "weekly_ta",
+      "desc": "Long-window volume z-score on weekly bars.",
+      "formula": "(V^{(w)} - \\bar V_{26}^{(w)}) / \\sigma_V^{(w),26}",
+      "source": "resampled daily"
+    },
+    {
+      "name": "M_close",
+      "category": "monthly_ta",
+      "desc": "Monthly close price; monthly bars are resampled from daily.",
+      "formula": "C^{(M)}",
+      "source": "resampled daily"
+    },
+    {
+      "name": "M_ret_1",
+      "category": "monthly_ta",
+      "desc": "One-month return.",
+      "formula": "r^{(M)} = C^{(M)}/C_{-1}^{(M)} - 1",
+      "source": "resampled daily"
+    },
+    {
+      "name": "M_rsi14",
+      "category": "monthly_ta",
+      "desc": "14-period RSI on monthly close.",
+      "formula": "RSI_{14}^{(M)}",
+      "source": "resampled daily"
+    },
+    {
+      "name": "M_macd_hist",
+      "category": "monthly_ta",
+      "desc": "MACD histogram on monthly close.",
+      "formula": "MACD_hist^{(M)}",
+      "source": "resampled daily"
+    },
+    {
+      "name": "M_bb_pos",
+      "category": "monthly_ta",
+      "desc": "Bollinger position on monthly close.",
+      "formula": "(C^{(M)} - MA^{(M)})/(2\\sigma^{(M)})",
+      "source": "resampled daily"
+    },
+    {
+      "name": "M_ma_ratio",
+      "category": "monthly_ta",
+      "desc": "Fast/slow MA ratio on monthly close.",
+      "formula": "MA_{fast}^{(M)}/MA_{slow}^{(M)} - 1",
+      "source": "resampled daily"
+    },
+    {
+      "name": "M_vol",
+      "category": "monthly_ta",
+      "desc": "Rolling monthly log-return volatility.",
+      "formula": "\\sigma^{(M)}(log r)",
+      "source": "resampled daily"
+    },
+    {
+      "name": "M_range_pct",
+      "category": "monthly_ta",
+      "desc": "Monthly range as a percentage of close.",
+      "formula": "(H^{(M)} - L^{(M)})/C^{(M)}",
+      "source": "resampled daily"
+    },
+    {
+      "name": "M_vol_z",
+      "category": "monthly_ta",
+      "desc": "Volume z-score on monthly bars (6-month lookback).",
+      "formula": "(V^{(M)} - \\bar V_6^{(M)})/\\sigma_V^{(M),6}",
+      "source": "resampled daily"
+    },
+    {
+      "name": "d_w180_slope",
+      "category": "window",
+      "desc": "OLS slope of close over the last 180 daily bars, normalised by mean. Long-term trend strength.",
+      "formula": "slope_{180}(C)/\\bar C_{180}",
+      "source": "derived"
+    },
+    {
+      "name": "d_w180_cum_ret",
+      "category": "window",
+      "desc": "Cumulative return over the last 180 daily bars.",
+      "formula": "C_t/C_{t-180} - 1",
+      "source": "derived"
+    },
+    {
+      "name": "d_w180_dd",
+      "category": "window",
+      "desc": "Maximum drawdown observed in the last 180 daily bars (negative number).",
+      "formula": "min_t(C_t/\\max_{s<=t}C_s - 1)",
+      "source": "derived"
+    },
+    {
+      "name": "w_w26_slope",
+      "category": "window",
+      "desc": "OLS slope of close over the last 26 weekly bars (≈6 months).",
+      "formula": "slope_{26}(C^{(w)})/\\bar C^{(w)}",
+      "source": "derived"
+    },
+    {
+      "name": "w_w26_cum_ret",
+      "category": "window",
+      "desc": "Cumulative return over 26 weeks.",
+      "formula": "C^{(w)}_t/C^{(w)}_{t-26} - 1",
+      "source": "derived"
+    },
+    {
+      "name": "w_w26_dd",
+      "category": "window",
+      "desc": "Maximum drawdown over 26 weeks.",
+      "formula": "min_t(C^{(w)}_t/\\max_{s<=t}C^{(w)}_s - 1)",
+      "source": "derived"
+    },
+    {
+      "name": "M_w6_slope",
+      "category": "window",
+      "desc": "OLS slope of close over the last 6 monthly bars.",
+      "formula": "slope_6(C^{(M)})/\\bar C^{(M)}",
+      "source": "derived"
+    },
+    {
+      "name": "M_w6_cum_ret",
+      "category": "window",
+      "desc": "Cumulative return over 6 months.",
+      "formula": "C^{(M)}/C^{(M)}_{-6} - 1",
+      "source": "derived"
+    },
+    {
+      "name": "M_w6_dd",
+      "category": "window",
+      "desc": "Maximum drawdown over 6 months.",
+      "formula": "min(C^{(M)}/\\max C^{(M)} - 1)",
+      "source": "derived"
+    },
+    {
+      "name": "m15_24h_ret",
+      "category": "intraday",
+      "desc": "Return over the last 24 hours computed from 15-minute bars (96 bars).",
+      "formula": "C^{(15m)}_t/C^{(15m)}_{t-96} - 1",
+      "source": "Binance + Bitstamp 15m"
+    },
+    {
+      "name": "m15_24h_vol",
+      "category": "intraday",
+      "desc": "Standard deviation of log returns over the last 96 fifteen-minute bars (24h).",
+      "formula": "\\sigma_{96}(log r^{(15m)})",
+      "source": "Binance + Bitstamp 15m"
+    },
+    {
+      "name": "m15_24h_rsi",
+      "category": "intraday",
+      "desc": "14-period RSI on the 15-minute series (last value).",
+      "formula": "RSI_{14}^{(15m)}",
+      "source": "Binance + Bitstamp 15m"
+    },
+    {
+      "name": "m15_5d_vol",
+      "category": "intraday",
+      "desc": "Standard deviation of log returns over 5 days of 15-minute bars (480 bars).",
+      "formula": "\\sigma_{480}(log r^{(15m)})",
+      "source": "Binance + Bitstamp 15m"
+    },
+    {
+      "name": "m15_5d_dd",
+      "category": "intraday",
+      "desc": "Maximum drawdown observed in the last 5 days of 15-minute closes.",
+      "formula": "min(C^{(15m)}/\\max C^{(15m)}_{rolling 5d} - 1)",
+      "source": "Binance + Bitstamp 15m"
+    },
+    {
+      "name": "m15_24h_slope",
+      "category": "intraday",
+      "desc": "OLS slope of log close over the last 24 hours of 15-minute bars; positive = up-trending intraday.",
+      "formula": "slope_{96}(log C^{(15m)})",
+      "source": "Binance + Bitstamp 15m"
+    },
+    {
+      "name": "sw_chop_er_5d",
+      "category": "sideways",
+      "desc": "1 − Kaufman Efficiency Ratio over 5 days. ER = |net move| / sum |bar moves|. High value = sideways chop.",
+      "formula": "1 - |C_t-C_{t-5}|/\\sum|\\Delta C|",
+      "source": "derived"
+    },
+    {
+      "name": "sw_chop_er_14d",
+      "category": "sideways",
+      "desc": "Same metric with N=14.",
+      "formula": "1 - ER_{14}",
+      "source": "derived"
+    },
+    {
+      "name": "sw_chop_er_30d",
+      "category": "sideways",
+      "desc": "Same metric with N=30.",
+      "formula": "1 - ER_{30}",
+      "source": "derived"
+    },
+    {
+      "name": "sw_chop_er_60d",
+      "category": "sideways",
+      "desc": "Same metric with N=60. Larger horizon detects long compressions.",
+      "formula": "1 - ER_{60}",
+      "source": "derived"
+    },
+    {
+      "name": "sw_ratio_14d",
+      "category": "sideways",
+      "desc": "Fraction of last 14 days with |return| < 0.4 σ_{30} — volatility-adaptive 'sideways days' count.",
+      "formula": "\\frac{1}{14} \\sum 1\\{|r_i| < 0.4\\sigma_{30}\\}",
+      "source": "derived"
+    },
+    {
+      "name": "sw_ratio_30d",
+      "category": "sideways",
+      "desc": "Same as sw_ratio_14d with a 30-day window.",
+      "formula": "\\frac{1}{30} \\sum 1\\{|r_i| < 0.4\\sigma_{30}\\}",
+      "source": "derived"
+    },
+    {
+      "name": "sw_ci_14d",
+      "category": "sideways",
+      "desc": "Choppiness Index over 14 days. 100 = pure chop, 0 = pure trend.",
+      "formula": "100 \\log_{10}(\\sum ATR_{14}/range_{14})/\\log_{10}(14)",
+      "source": "derived"
+    },
+    {
+      "name": "sw_ci_30d",
+      "category": "sideways",
+      "desc": "Choppiness Index over 30 days.",
+      "formula": "100 \\log_{10}(\\sum ATR_{30}/range_{30})/\\log_{10}(30)",
+      "source": "derived"
+    },
+    {
+      "name": "sw_bb_width_20d",
+      "category": "sideways",
+      "desc": "Width of a 20-day, 2-σ Bollinger Band normalised by close — a compression indicator.",
+      "formula": "4\\sigma_{20}/C_t",
+      "source": "derived"
+    },
+    {
+      "name": "sw_range_pct_30d",
+      "category": "sideways",
+      "desc": "30-day high-low range as a fraction of current close. Small = consolidating.",
+      "formula": "(\\max H_{30} - \\min L_{30})/C_t",
+      "source": "derived"
+    },
+    {
+      "name": "sw_streak_med",
+      "category": "sideways",
+      "desc": "Number of consecutive days (up to today) on which |return| was below 0.4 σ_{30}.",
+      "formula": "consecutive 1\\{|r|<0.4\\sigma_{30}\\}",
+      "source": "derived"
+    },
+    {
+      "name": "d_mvrv_z",
+      "category": "mvrv_proxy",
+      "desc": "Price-based MVRV-Z proxy. True MVRV uses on-chain Realized Cap; we approximate Realized Price by a 365-day moving average. Positive = market value above 'realized', possibly overheated.",
+      "formula": "(C_t - MA_{365}(C))/\\sigma_{365}(C - MA_{365})",
+      "source": "derived (proxy for Glassnode MVRV-Z)"
+    },
+    {
+      "name": "d_mvrv_z_chg7",
+      "category": "mvrv_proxy",
+      "desc": "7-day change in the MVRV-Z proxy. Captures regime turning points.",
+      "formula": "MVRV_t - MVRV_{t-7}",
+      "source": "derived"
+    },
+    {
+      "name": "dxy_close_ret_1d",
+      "category": "macro",
+      "desc": "1-day return of the U.S. dollar index (ticker DX-Y.NYB on yfinance).",
+      "formula": "DXY_t/DXY_{t-1} - 1",
+      "source": "yfinance DX-Y.NYB"
+    },
+    {
+      "name": "dxy_close_ret_5d",
+      "category": "macro",
+      "desc": "5-day return of DXY.",
+      "formula": "DXY_t/DXY_{t-5} - 1",
+      "source": "yfinance DX-Y.NYB"
+    },
+    {
+      "name": "dxy_close_vol_20d",
+      "category": "macro",
+      "desc": "20-day rolling std of DXY log returns.",
+      "formula": "\\sigma_{20}(log DXY)",
+      "source": "yfinance DX-Y.NYB"
+    },
+    {
+      "name": "dxy_close_z_60d",
+      "category": "macro",
+      "desc": "60-day z-score of DXY.",
+      "formula": "(DXY_t - \\bar DXY_{60})/\\sigma_{60}",
+      "source": "yfinance DX-Y.NYB"
+    },
+    {
+      "name": "gold_close_ret_1d",
+      "category": "macro",
+      "desc": "1-day return of front-month gold futures (GC=F).",
+      "formula": "GLD_t/GLD_{t-1}-1",
+      "source": "yfinance GC=F"
+    },
+    {
+      "name": "gold_close_ret_5d",
+      "category": "macro",
+      "desc": "5-day return of gold.",
+      "formula": "GLD_t/GLD_{t-5}-1",
+      "source": "yfinance GC=F"
+    },
+    {
+      "name": "gold_close_vol_20d",
+      "category": "macro",
+      "desc": "20-day vol of gold returns.",
+      "formula": "\\sigma_{20}(log GLD)",
+      "source": "yfinance GC=F"
+    },
+    {
+      "name": "gold_close_z_60d",
+      "category": "macro",
+      "desc": "60-day z-score of gold price.",
+      "formula": "(GLD - \\bar GLD_{60})/\\sigma_{60}",
+      "source": "yfinance GC=F"
+    },
+    {
+      "name": "spx_close_ret_1d",
+      "category": "macro",
+      "desc": "1-day return of the S&P 500 index (^GSPC).",
+      "formula": "SPX_t/SPX_{t-1}-1",
+      "source": "yfinance ^GSPC"
+    },
+    {
+      "name": "spx_close_ret_5d",
+      "category": "macro",
+      "desc": "5-day return of S&P 500.",
+      "formula": "SPX_t/SPX_{t-5}-1",
+      "source": "yfinance ^GSPC"
+    },
+    {
+      "name": "spx_close_vol_20d",
+      "category": "macro",
+      "desc": "20-day vol of S&P 500.",
+      "formula": "\\sigma_{20}(log SPX)",
+      "source": "yfinance ^GSPC"
+    },
+    {
+      "name": "spx_close_z_60d",
+      "category": "macro",
+      "desc": "60-day z-score of S&P 500.",
+      "formula": "(SPX-\\bar SPX_{60})/\\sigma_{60}",
+      "source": "yfinance ^GSPC"
+    },
+    {
+      "name": "vix_close_ret_1d",
+      "category": "macro",
+      "desc": "1-day return of CBOE Volatility Index (^VIX).",
+      "formula": "VIX_t/VIX_{t-1}-1",
+      "source": "yfinance ^VIX"
+    },
+    {
+      "name": "vix_close_ret_5d",
+      "category": "macro",
+      "desc": "5-day return of VIX.",
+      "formula": "VIX_t/VIX_{t-5}-1",
+      "source": "yfinance ^VIX"
+    },
+    {
+      "name": "vix_close_vol_20d",
+      "category": "macro",
+      "desc": "20-day vol of VIX returns.",
+      "formula": "\\sigma_{20}(log VIX)",
+      "source": "yfinance ^VIX"
+    },
+    {
+      "name": "vix_close_z_60d",
+      "category": "macro",
+      "desc": "60-day z-score of VIX level.",
+      "formula": "(VIX-\\bar VIX_{60})/\\sigma_{60}",
+      "source": "yfinance ^VIX"
+    },
+    {
+      "name": "tnx_close_ret_1d",
+      "category": "macro",
+      "desc": "1-day change of 10-year U.S. Treasury yield (^TNX, in % × 10 on yfinance).",
+      "formula": "TNX_t/TNX_{t-1}-1",
+      "source": "yfinance ^TNX"
+    },
+    {
+      "name": "tnx_close_ret_5d",
+      "category": "macro",
+      "desc": "5-day change of 10Y yield.",
+      "formula": "TNX_t/TNX_{t-5}-1",
+      "source": "yfinance ^TNX"
+    },
+    {
+      "name": "tnx_close_vol_20d",
+      "category": "macro",
+      "desc": "20-day vol of 10Y yield log changes.",
+      "formula": "\\sigma_{20}(log TNX)",
+      "source": "yfinance ^TNX"
+    },
+    {
+      "name": "tnx_close_z_60d",
+      "category": "macro",
+      "desc": "60-day z-score of 10Y yield.",
+      "formula": "(TNX-\\bar TNX_{60})/\\sigma_{60}",
+      "source": "yfinance ^TNX"
+    },
+    {
+      "name": "eth_close_ret_1d",
+      "category": "macro",
+      "desc": "1-day return of Ethereum (ETH-USD).",
+      "formula": "ETH_t/ETH_{t-1}-1",
+      "source": "yfinance ETH-USD"
+    },
+    {
+      "name": "eth_close_ret_5d",
+      "category": "macro",
+      "desc": "5-day return of ETH.",
+      "formula": "ETH_t/ETH_{t-5}-1",
+      "source": "yfinance ETH-USD"
+    },
+    {
+      "name": "eth_close_vol_20d",
+      "category": "macro",
+      "desc": "20-day vol of ETH returns.",
+      "formula": "\\sigma_{20}(log ETH)",
+      "source": "yfinance ETH-USD"
+    },
+    {
+      "name": "eth_close_z_60d",
+      "category": "macro",
+      "desc": "60-day z-score of ETH.",
+      "formula": "(ETH-\\bar ETH_{60})/\\sigma_{60}",
+      "source": "yfinance ETH-USD"
+    },
+    {
+      "name": "eth_close",
+      "category": "macro",
+      "desc": "Ethereum USD close price (used to derive the ETH/BTC ratio).",
+      "formula": "ETH_t",
+      "source": "yfinance ETH-USD"
+    },
+    {
+      "name": "ethbtc_ratio",
+      "category": "macro",
+      "desc": "ETH/BTC price ratio. Captures relative crypto-market rotation.",
+      "formula": "ETH_t/BTC_t",
+      "source": "derived"
+    },
+    {
+      "name": "ethbtc_ret_5d",
+      "category": "macro",
+      "desc": "5-day return of ETH/BTC ratio.",
+      "formula": "(ETH/BTC)_t/(ETH/BTC)_{t-5}-1",
+      "source": "derived"
+    },
+    {
+      "name": "funding_mean",
+      "category": "futures",
+      "desc": "Daily mean of three 8-hour funding payments on Binance USDT-margined BTC perpetual.",
+      "formula": "mean_{day}(funding_{8h})",
+      "source": "Binance fapi/v1/fundingRate"
+    },
+    {
+      "name": "funding_max",
+      "category": "futures",
+      "desc": "Maximum 8-hour funding rate observed during the day.",
+      "formula": "max_{day}(funding_{8h})",
+      "source": "Binance fapi/v1/fundingRate"
+    },
+    {
+      "name": "funding_min",
+      "category": "futures",
+      "desc": "Minimum 8-hour funding rate observed during the day.",
+      "formula": "min_{day}(funding_{8h})",
+      "source": "Binance fapi/v1/fundingRate"
+    },
+    {
+      "name": "funding_ma_7d",
+      "category": "futures",
+      "desc": "7-day moving average of funding_mean — smooths noisy intraday spikes.",
+      "formula": "MA_7(funding_mean)",
+      "source": "derived"
+    },
+    {
+      "name": "funding_z_30d",
+      "category": "futures",
+      "desc": "30-day z-score of funding_mean. Extreme positive values often coincide with crowded long positioning.",
+      "formula": "(f - \\bar f_{30})/\\sigma_{30}",
+      "source": "derived"
+    },
+    {
+      "name": "basis",
+      "category": "futures",
+      "desc": "Perpetual-vs-spot basis = (perp_close / spot_close) - 1, computed from daily mark-price klines.",
+      "formula": "basis = perp_C / spot_C - 1",
+      "source": "Binance fapi + api klines"
+    },
+    {
+      "name": "basis_ma_5d",
+      "category": "futures",
+      "desc": "5-day MA of basis.",
+      "formula": "MA_5(basis)",
+      "source": "derived"
+    },
+    {
+      "name": "basis_z_30d",
+      "category": "futures",
+      "desc": "30-day z-score of basis.",
+      "formula": "(b - \\bar b_{30})/\\sigma_{30}",
+      "source": "derived"
+    },
+    {
+      "name": "fng",
+      "category": "sentiment",
+      "desc": "Fear & Greed Index level (0 = extreme fear, 100 = extreme greed).",
+      "formula": "FnG_t",
+      "source": "alternative.me /fng/"
+    },
+    {
+      "name": "fng_ma_7d",
+      "category": "sentiment",
+      "desc": "7-day moving average of F&G.",
+      "formula": "MA_7(FnG)",
+      "source": "derived"
+    },
+    {
+      "name": "fng_chg_3d",
+      "category": "sentiment",
+      "desc": "3-day change in F&G level. Captures abrupt sentiment shifts.",
+      "formula": "FnG_t - FnG_{t-3}",
+      "source": "derived"
+    },
+    {
+      "name": "fng_extreme_low",
+      "category": "sentiment",
+      "desc": "Indicator for FnG ≤ 25 (extreme fear regime).",
+      "formula": "1\\{FnG \\le 25\\}",
+      "source": "derived"
+    },
+    {
+      "name": "fng_extreme_high",
+      "category": "sentiment",
+      "desc": "Indicator for FnG ≥ 75 (extreme greed regime).",
+      "formula": "1\\{FnG \\ge 75\\}",
+      "source": "derived"
+    },
+    {
+      "name": "cal_dow",
+      "category": "calendar",
+      "desc": "Day of week (0 = Monday … 6 = Sunday). Captures weekly seasonality of crypto markets.",
+      "formula": "weekday(t)",
+      "source": "calendar"
+    },
+    {
+      "name": "cal_month",
+      "category": "calendar",
+      "desc": "Month index (1–12).",
+      "formula": "month(t)",
+      "source": "calendar"
+    },
+    {
+      "name": "cal_days_to_halving",
+      "category": "calendar",
+      "desc": "Days until the next BTC halving (2012-11-28, 2016-07-09, 2020-05-11, 2024-04-19, 2028-04-19 approx).",
+      "formula": "next_halving - t",
+      "source": "calendar"
+    },
+    {
+      "name": "cal_days_since_halving",
+      "category": "calendar",
+      "desc": "Days since the most recent BTC halving.",
+      "formula": "t - last_halving",
+      "source": "calendar"
+    },
+    {
+      "name": "m2_chg_1d",
+      "category": "macro",
+      "desc": "FRED M2 통화량 1일 변화율(보간된 일자 시리즈 기준).",
+      "formula": "M2_t / M2_{t-1} - 1",
+      "source": "FRED M2SL (21일 lag, 일별 선형보간)"
+    },
+    {
+      "name": "m2_chg_1w",
+      "category": "macro",
+      "desc": "M2 7일 변화율.",
+      "formula": "M2_t / M2_{t-7} - 1",
+      "source": "FRED M2SL (21일 lag)"
+    },
+    {
+      "name": "m2_chg_1m",
+      "category": "macro",
+      "desc": "M2 30일 변화율.",
+      "formula": "M2_t / M2_{t-30} - 1",
+      "source": "FRED M2SL (21일 lag)"
+    },
+    {
+      "name": "m2_chg_3m",
+      "category": "macro",
+      "desc": "M2 90일 변화율 — 분기 단위 통화 팽창/긴축 추세.",
+      "formula": "M2_t / M2_{t-90} - 1",
+      "source": "FRED M2SL (21일 lag)"
+    },
+    {
+      "name": "m2_z_24m",
+      "category": "macro",
+      "desc": "M2 수준의 24개월 rolling z-score. 통화량 사이클 위치.",
+      "formula": "(M2_t - MA_{720}(M2)) / sigma_{720}(M2)",
+      "source": "FRED M2SL (21일 lag)"
+    },
+    {
+      "name": "rho30_btc_spx",
+      "category": "macro",
+      "desc": "BTC와 S&P500 일 로그수익률의 30일 rolling correlation. 위험자산 동조성.",
+      "formula": "Corr_{30}(\\Delta\\log BTC, \\Delta\\log SPX)",
+      "source": "derived from yfinance ^GSPC + BTC close"
+    },
+    {
+      "name": "rho30_btc_dxy",
+      "category": "macro",
+      "desc": "BTC와 달러지수(DXY) 일 로그수익률의 30일 rolling correlation. 일반적으로 음의 상관.",
+      "formula": "Corr_{30}(\\Delta\\log BTC, \\Delta\\log DXY)",
+      "source": "derived from yfinance DX-Y.NYB"
+    },
+    {
+      "name": "rho30_btc_gold",
+      "category": "macro",
+      "desc": "BTC와 금 일 로그수익률의 30일 rolling correlation. 안전자산 동조성 측정.",
+      "formula": "Corr_{30}(\\Delta\\log BTC, \\Delta\\log GOLD)",
+      "source": "derived from yfinance GC=F"
+    },
+    {
+      "name": "rho30_btc_eth",
+      "category": "macro",
+      "desc": "BTC와 ETH 일 로그수익률의 30일 rolling correlation. 크립토 시장 결속도.",
+      "formula": "Corr_{30}(\\Delta\\log BTC, \\Delta\\log ETH)",
+      "source": "derived from yfinance ETH-USD"
+    },
+    {
+      "name": "funding_skew_7d",
+      "category": "futures",
+      "desc": "(funding_max - funding_min)의 7일 평균. 일중 펀딩 스큐의 추세.",
+      "formula": "MA_{7}(funding_max - funding_min)",
+      "source": "Binance USDT-perp funding rate"
+    },
+    {
+      "name": "funding_velocity",
+      "category": "futures",
+      "desc": "펀딩 평균값의 7일 변화량을 30일 변동성으로 정규화 — 펀딩 모멘텀 z-score.",
+      "formula": "(funding_mean_t - funding_mean_{t-7}) / sigma_{30}(funding_mean)",
+      "source": "Binance USDT-perp funding rate"
+    },
+    {
+      "name": "hashrate_ribbon",
+      "category": "mvrv_proxy",
+      "desc": "30일 vs 60일 hash rate MA의 비율. 채굴자 항복/회복 신호. 음수면 단기 hash rate가 장기보다 낮음.",
+      "formula": "MA_{30}(HR) / MA_{60}(HR) - 1",
+      "source": "Coin Metrics community HashRate (≥1d lag)"
+    },
+    {
+      "name": "hashrate_chg_7d",
+      "category": "mvrv_proxy",
+      "desc": "Hash rate 7일 변화율. 네트워크 보안/채굴 인센티브 변화.",
+      "formula": "HR_t / HR_{t-7} - 1",
+      "source": "Coin Metrics community HashRate"
+    },
+    {
+      "name": "adr_chg_7d",
+      "category": "mvrv_proxy",
+      "desc": "Active address 수 7일 변화율 — 네트워크 사용량 모멘텀.",
+      "formula": "AdrActCnt_t / AdrActCnt_{t-7} - 1",
+      "source": "Coin Metrics community AdrActCnt"
+    },
+    {
+      "name": "tx_per_adr",
+      "category": "mvrv_proxy",
+      "desc": "주소당 평균 트랜잭션 수 — 네트워크 활동 강도/효율.",
+      "formula": "TxCnt / (AdrActCnt + 1)",
+      "source": "Coin Metrics community TxCnt + AdrActCnt"
+    },
+    {
+      "name": "mvrv2_z_200w",
+      "category": "mvrv_proxy",
+      "desc": "200주(1400일) MA 기준 z-score — Mayer-Multiple 스타일 장기 밸류에이션 마커.",
+      "formula": "(C_t - MA_{1400}(C)) / sigma_{1400}(C - MA_{1400})",
+      "source": "derived from BTC close"
+    },
+    {
+      "name": "mvrv2_z_ema900",
+      "category": "mvrv_proxy",
+      "desc": "Half-life 900일 EMA 기준 z-score — UTXO 에이징 근사 (실현가격 프록시).",
+      "formula": "(C - EMA_{hl=900}(\\log C)) / sigma_{900}",
+      "source": "derived from BTC close"
+    },
+    {
+      "name": "mvrv2_z_multi",
+      "category": "mvrv_proxy",
+      "desc": "MA90/365/1000/1500을 가중 블렌드한 multi-cohort 실현가격 근사의 365일 z-score.",
+      "formula": "(C - 0.2·MA_{90} - 0.2·MA_{365} - 0.3·MA_{1000} - 0.3·MA_{1500}) / sigma_{365}",
+      "source": "derived from BTC close"
+    },
+    {
+      "name": "mvrv2_mayer",
+      "category": "mvrv_proxy",
+      "desc": "Mayer Multiple — 단기 밸류에이션 (가격/200일MA - 1). 양수면 평균 위, 음수면 평균 아래.",
+      "formula": "C_t / MA_{200}(C) - 1",
+      "source": "derived from BTC close"
+    },
+    {
+      "name": "mvrv2_nvt_z",
+      "category": "mvrv_proxy",
+      "desc": "NVT-like 비율의 180일 z-score — 시가총액 / 활동주소 활동량 (Network Value to Transactions 근사).",
+      "formula": "(NVT_t - MA_{180}(NVT)) / sigma_{180}(NVT), NVT = MarketCap / (AdrActCnt+1)",
+      "source": "Coin Metrics community CapMrktCurUSD + AdrActCnt"
+    },
+    {
+      "name": "mvrv2_hashrate_z",
+      "category": "mvrv_proxy",
+      "desc": "Hash rate 30일 z-score — 채굴자 활동의 단기 이상치.",
+      "formula": "(HR_t - MA_{30}(HR)) / sigma_{30}(HR)",
+      "source": "Coin Metrics community HashRate"
+    },
+    {
+      "name": "vol_of_vol_30d",
+      "category": "window",
+      "desc": "Vol-of-vol — 14일 일변동성의 30일 표준편차. 변동성 자체의 변동성.",
+      "formula": "sigma_{30}(sigma_{14}(\\log r))",
+      "source": "derived from BTC close"
+    },
+    {
+      "name": "vol_regime_z",
+      "category": "window",
+      "desc": "현재 14일 변동성을 365일 평균/표준편차로 정규화한 변동성 레짐 z-score.",
+      "formula": "(sigma_{14} - MA_{365}(sigma_{14})) / sigma_{365}(sigma_{14})",
+      "source": "derived from BTC close"
+    }
+  ]
+}

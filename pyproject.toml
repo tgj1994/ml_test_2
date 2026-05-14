@@ -1,0 +1,22 @@
+[project]
+name = "coin-prediction-revised"
+version = "0.1.0"
+description = "BTC daily-direction prediction — commercial-data + EBM rewrite of coin_analysis"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "interpret>=0.6.7",
+    "matplotlib>=3.10.9",
+    "numpy>=2.4.4",
+    "pandas>=3.0.2",
+    "pyarrow>=24.0.0",
+    "python-bitcoinlib>=0.12.2",
+    "python-docx>=1.2.0",
+    "requests>=2.33.1",
+    "scikit-learn>=1.8.0",
+    "shap>=0.51.0",
+    "sodapy>=2.2.0",
+    # Kept for the XGBoost baseline that runs alongside EBM on the same
+    # revised data. Lets us produce side-by-side DSR/PBO/Bootstrap CI / PSR.
+    "xgboost>=3.2.0",
+]

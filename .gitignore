@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# venv
+.venv/
+venv/
+
+# Build / cache
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Sweep generated artifacts — re-created at runtime by start.sh
+logs/
+reports/
+data/preds_cache_ebm/
+data/preds_cache_xgb/
+data/live_models_ebm/
+data/live_models_xgb/
+
+# Selector outputs — re-created by analysis/v5_keep_selector_ebm.py during start.sh
+src/v5_keep.py
+src/v5_2_keep.py
+src/v5_3_keep.py
+
+# Local marker / state
+ops/sweep_state.json
+ops/*_armed.flag
+ops/*.lock
+
+# Secrets — never commit
+.bitcoin_rpc_credentials
+*.pem
+*.key
+*.env
+.env*
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# nohup output
+nohup.out
+sweep.log
+sweep.pid
+
+# Local backups / archives
+_archive_*/
+_pre_*_backup/
+*.bak
+*.bak2
